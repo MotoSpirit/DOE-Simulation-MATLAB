@@ -1,0 +1,15 @@
+# MATLAB files
+*.asv
+*.mat
+*.fig
+
+# Simulation Outputs
+CONCLUSIONS/
+*.xlsx
+*.pptx
+!PLANTILLA PROJECTES.pptx
+!GEARBOXvsDIRECT_GerardArranz.pptx
+
+# OS generated files
+.DS_Store
+Thumbs.db
