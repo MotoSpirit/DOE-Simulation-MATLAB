@@ -466,14 +466,14 @@ function Dashboard_DOE_Integrated(res_all, f_vil, f_mot, derat_c, derat_d, expor
                 tmec = tt(1:length(trq_data));
                 
                 % Plot parell entregat
-                plot(ax_trq_cmp, tmec, trq_data, 'Color', c, 'LineWidth', 1.5, ...
+                plot(ax_trq_cmp, tmec, trq_data, 'Color', c, 'LineWidth', 1.0, ...
                     'DisplayName', [r.nom_configuracio ' - Entregat']);
                 
                 % Plot parell demanat (discontínua) i àrea de pèrdua
                 if isfield(r, 'parell_demanat_7v') && ~isempty(r.parell_demanat_7v)
                     n_min = min(length(tmec), length(r.parell_demanat_7v));
                     plot(ax_trq_cmp, tmec(1:n_min), r.parell_demanat_7v(1:n_min), ...
-                        'Color', c, 'LineWidth', 1.0, 'LineStyle', '--', ...
+                        'Color', c, 'LineWidth', 0.8, 'LineStyle', '--', ...
                         'DisplayName', [r.nom_configuracio ' - Demanat']);
                     delta_trq = r.parell_demanat_7v(1:n_min) - trq_data(1:n_min);
                     delta_trq(delta_trq < 0) = 0;
