@@ -19,7 +19,7 @@ p_base.dist_cgy            = 0.64;
 
 % 2. Paràmetres Transmissió: CAIXA DE CANVIS
 p_caixa = struct();
-p_caixa.Rendiment_total    = 0.78;
+p_caixa.Rendiment_total    = 0.797;
 p_caixa.Ratio_primaria      = 1.409091;
 p_caixa.Ratio_secundaria   = 2.0625;
 p_caixa.Ratio_primera      = 2.75;
@@ -36,7 +36,7 @@ p_caixa.extra_mass         = 8;
 
 % 3. Paràmetres Transmissió: DIRECTA
 p_dir = struct();
-p_dir.Rendiment_total      = 0.9;
+p_dir.Rendiment_total      = 0.95;
 p_dir.Ratio_primaria        = 3.5;
 p_dir.massa_efectiva       = 7.26;
 p_dir.extra_mass           = 0;

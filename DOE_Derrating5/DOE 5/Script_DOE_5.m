@@ -257,6 +257,8 @@ function start_doe(fig, c88, c124, cten, ctx, cdir, cpwr_c, cpwr_d, cns, cnp88, 
             derat_7v_all = [];
             kmot_7v_all = [];
             kbat_7v_all = [];
+            gas_7v_all = [];
+            mode_7v_all = [];
             temps_1v_llista = zeros(1, num_voltes_bat);
             Ah_1v_llista = zeros(1, num_voltes_bat);
             kWh_1v_llista = zeros(1, num_voltes_bat);
@@ -386,6 +388,8 @@ function start_doe(fig, c88, c124, cten, ctx, cdir, cpwr_c, cpwr_d, cns, cnp88, 
                     kmot_7v_all = [kmot_7v_all; rmec_v.k_mot_all(1:end-1)];
                     kbat_7v_all = [kbat_7v_all; rmec_v.k_bat_all(1:end-1)];
                     marxa_7v_all = [marxa_7v_all; rmec_v.marxa(1:end-1)];
+                    gas_7v_all = [gas_7v_all; rmec_v.gas(1:end-1)];
+                    mode_7v_all = [mode_7v_all; rmec_v.mode(1:end-1)];
                 else
                     rpm_7v_all = [rpm_7v_all; rmec_v.rpm];
                     trq_7v_all = [trq_7v_all; rmec_v.parell_motor];
@@ -408,6 +412,8 @@ function start_doe(fig, c88, c124, cten, ctx, cdir, cpwr_c, cpwr_d, cns, cnp88, 
                     kmot_7v_all = [kmot_7v_all; rmec_v.k_mot_all(:)];
                     kbat_7v_all = [kbat_7v_all; rmec_v.k_bat_all(:)];
                     marxa_7v_all = [marxa_7v_all; rmec_v.marxa(:)];
+                    gas_7v_all = [gas_7v_all; rmec_v.gas(:)];
+                    mode_7v_all = [mode_7v_all; rmec_v.mode(:)];
                 end
                 marxa_laps_cell{volta} = rmec_v.marxa;
                 
@@ -501,6 +507,8 @@ function start_doe(fig, c88, c124, cten, ctx, cdir, cpwr_c, cpwr_d, cns, cnp88, 
             rmec.factor_derat_7v = derat_7v_all;
             rmec.k_mot_7v = kmot_7v_all;
             rmec.k_bat_7v = kbat_7v_all;
+            rmec.gas_7v = gas_7v_all;
+            rmec.mode_7v = mode_7v_all;
             rmec.parell_demanat_7v = parell_dem_all; % NOU: Parell demanat sense limitació de voltatge
             
             % MODEL BATERIA INTEGRAT (dt=0.01s, física inline a simulacio_moto_canut)

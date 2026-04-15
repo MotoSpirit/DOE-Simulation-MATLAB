@@ -225,7 +225,12 @@ function Dashboard_DOE_Integrated(res_all, f_vil, f_mot, derat_c, derat_d, expor
     title(ax_trqdiff, 'Diferència Parell Perdut per Limitació (N·m)');
     xlabel(ax_trqdiff, 'Distància (m)'); ylabel(ax_trqdiff, '\DeltaParell (N·m)');
 
-    axs = [ax_pb_c, ax_pb_1, ax_pb_2, ax_pm_c, ax_pm_1, ax_pm_2, ax_pw_c, ax_pw_1, ax_pw_2, ax_v, ax_i, ax_soc, ax_tmp, ax_res, ax_trq, ax_rpm, ax_idq, ax_cur, ax_tcu, ax_dyn, ax_tcl, ax_irms, ax_qf, ax_lt, ax_dmot, ax_dbat, ax_v7v, ax_v1v, ax_gears, ax_trq_cmp, ax_vlim, ax_trqdiff];
+    t13 = uitab(tg, 'Title', 'Gas Factor');
+    ax_gas = uiaxes(t13, 'Position', [60 60 830 720]);
+    title(ax_gas, 'Gas Factor Profile (%) - Single Lap');
+    xlabel(ax_gas, 'Distància Relativa (m)'); ylabel(ax_gas, 'Gas (%)');
+
+    axs = [ax_pb_c, ax_pb_1, ax_pb_2, ax_pm_c, ax_pm_1, ax_pm_2, ax_pw_c, ax_pw_1, ax_pw_2, ax_v, ax_i, ax_soc, ax_tmp, ax_res, ax_trq, ax_rpm, ax_idq, ax_cur, ax_tcu, ax_dyn, ax_tcl, ax_irms, ax_qf, ax_lt, ax_dmot, ax_dbat, ax_v7v, ax_v1v, ax_gears, ax_trq_cmp, ax_vlim, ax_trqdiff, ax_gas];
 
     % --- FUNCIONS DE LÒGICA ---
 
@@ -495,6 +500,18 @@ function Dashboard_DOE_Integrated(res_all, f_vil, f_mot, derat_c, derat_d, expor
                     plot(ax_vlim, tvb, r.V_batt, 'Color', c, 'LineWidth', 1.2, ...
                         'LineStyle', ':', 'DisplayName', [r.nom_configuracio ' (1 volta)']);
                 end
+
+                % 9. Gas Factor tab (ax_gas)
+                if isfield(r, 'gas_7v') && isfield(r, 'laps_dist') && ~isempty(r.laps_dist{1})
+                    % Només mostrem la primera volta
+                    d_1v = r.laps_dist{1}(:);
+                    n_1v = length(d_1v);
+                    if length(r.gas_7v) >= n_1v
+                        gas_1v = r.gas_7v(1:n_1v);
+                        plot(ax_gas, d_1v, gas_1v * 100, 'Color', c, 'LineWidth', 1.5, ...
+                            'DisplayName', r.nom_configuracio);
+                    end
+                end
                 
                 % 7. Data Tables
                 m1=floor(r.temps_1_volta/60); s1=mod(r.temps_1_volta,60);
@@ -571,6 +588,38 @@ function Dashboard_DOE_Integrated(res_all, f_vil, f_mot, derat_c, derat_d, expor
                     for b = bounds(1:end-1) % Ocultar l'última marca (meta final)
                         for a = axs_v
                             xline(a, b, '--', 'Color', [0.6 0.6 0.6], 'LineWidth', 1.2, 'HandleVisibility', 'off');
+                        end
+                    end
+                end
+                
+                % Fons difuminat per les zones de MODE COPIA (mode_7v == 0) vs MODO FISICA (1)
+                if isfield(r1, 'mode_7v') && isfield(r1, 'distancia_7v') && ~isempty(r1.mode_7v)
+                    m_arr = r1.mode_7v;
+                    d_arr = r1.distancia_7v;
+                    if length(m_arr) == length(d_arr)
+                        % Pad amb 1 (Fisica) als extrems per tancar qualsevol tram
+                        edges = diff([1; m_arr(:); 1]);
+                        idx_start = find(edges == -1); % Inici de 0s (Copia)
+                        idx_end   = find(edges == 1) - 1; % Final de 0s (Copia)
+                        
+                        for i = 1:length(idx_start)
+                            start_i = min(max(1, idx_start(i)), length(d_arr));
+                            end_i   = min(max(1, idx_end(i)), length(d_arr));
+                            xs = d_arr(start_i);
+                            xe = d_arr(end_i);
+                            
+                            if xe > xs
+                                for a = axs_v
+                                    try xregion(a, xs, xe, 'FaceColor', [0.85 0.85 0.95], 'FaceAlpha', 0.5, 'HandleVisibility', 'off'); catch, end
+                                end
+                                % Per la pestanya de Gas que només té 1 volta
+                                if isvalid(ax_gas) && xs <= r1.laps_dist{1}(end)
+                                    xe_lap1 = min(xe, r1.laps_dist{1}(end));
+                                    if xe_lap1 > xs
+                                        try xregion(ax_gas, xs, xe_lap1, 'FaceColor', [0.85 0.85 0.95], 'FaceAlpha', 0.5, 'HandleVisibility', 'off'); catch, end
+                                    end
+                                end
+                            end
                         end
                     end
                 end
@@ -665,6 +714,7 @@ function Dashboard_DOE_Integrated(res_all, f_vil, f_mot, derat_c, derat_d, expor
             'LapOverlay',    t10, {{'LapOverlay',ax_v1v}};
             'GearShifts',    t11, {{'GearOverlay',ax_gears}};
             'TorqueLimits',  t12, {{'TorqueComparison',ax_trq_cmp},{'VoltageBus',ax_vlim},{'TorqueDelta',ax_trqdiff}};
+            'GasFactor',     t13, {{'GasProfile',ax_gas}};
         };
         
         original_tab = tg.SelectedTab;

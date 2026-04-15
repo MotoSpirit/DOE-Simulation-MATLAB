@@ -420,15 +420,27 @@ end
 
 %% BLOC 1 - CARREGAR DADES
 taula_seg   = readtable('zones_motorland.xlsx', 'Sheet', 'Segments');
-taula_gas   = readtable('zones_motorland.xlsx', 'Sheet', 'Factor_Gas');
+taula_gas_moto = readtable('zones_motorland.xlsx', 'Sheet', 'Factor_Gas_Motospirit');
+taula_gas_vila = readtable('zones_motorland.xlsx', 'Sheet', 'Factor_Gas_Vilanova');
+
+if isfield(parametres, 'Ratio_primera')
+    % Config: CAIXA -> Motospirit
+    gas_ref    = taula_gas_moto.Factor_Gas_MOTOSPIRIT;
+    metres_gas = taula_gas_moto.Metre;
+else
+    % Config: DIRECTE -> Vilanova
+    gas_ref    = taula_gas_vila.Factor_Gas_VILANOVA;
+    metres_gas = taula_gas_vila.Metre;
+end
+
 taula_rec   = readtable('zones_motorland.xlsx', 'Sheet', 'Rectes_Frenada');
 volta_ideal = readtable('Volta_Ideal_MOTOSPIRIT.xlsx');
 
 metres_ref  = volta_ideal.Distancia_m;
 vel_ref     = volta_ideal.Speed_m_s;
 alt_ref     = volta_ideal.Altitud_m_;
-gas_ref     = taula_gas.Factor_Gas;
-metres_gas  = taula_gas.Metre;
+% gas_ref and metres_gas are assigned above based on configuration
+
 
 pendent_ref     = (gradient(alt_ref) ./ max(gradient(metres_ref), 1e-6)) * 100;
 distancia_lap   = metres_ref(end);
@@ -695,7 +707,7 @@ while d_actual < distancia_total
 
         v_anterior = v_actual;
         v_ideal    = interp1(metres_ref, vel_ref, d_volta, 'linear', 'extrap');
-        gas_actual = interp1(metres_gas, gas_ref, d_volta, 'linear', 'extrap');
+        gas_actual = interp1(taula_gas_moto.Metre, taula_gas_moto.Factor_Gas_MOTOSPIRIT, d_volta, 'linear', 'extrap');
 
         if v_actual > v_ideal && copia_rec_idx > 0
             pendent_rec_ms = taula_rec.Pendent(copia_rec_idx) / 3.6;
